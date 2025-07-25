@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1" />
+  <title>Se Você Fosse Um Site</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body class="min-h-screen bg-gray-50 font-[Poppins] flex items-center justify-center p-4">
+  <div class="max-w-2xl w-full space-y-6">
+
+    <!-- 1) Welcome Screen -->
+    <div id="welcome" class="bg-white rounded-2xl shadow-lg p-8 max-w-xl mx-auto space-y-8 animate-fade-in">
+      <h1 class="text-4xl font-bold text-indigo-700 text-center mb-6 animate-bounce">
+         Se você fosse um site…
+      </h1>
+    
+      <form id="welcome-form" class="space-y-6">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div class="flex flex-col">
+            <label for="user-name-input" class="mb-1 text-gray-600">Nome</label>
+            <input id="user-name-input" type="text" placeholder="Seu nome"
+              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 transition transform hover:scale-105" />
+          </div>
+          <div class="flex flex-col">
+            <label for="user-age-input" class="mb-1 text-gray-600">Idade</label>
+            <input id="user-age-input" type="number" placeholder="Sua idade"
+              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 transition transform hover:scale-105" />
+          </div>
+        </div>
+    
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div class="flex flex-col">
+            <label for="user-city-input" class="mb-1 text-gray-600">Cidade</label>
+            <input id="user-city-input" type="text" placeholder="Onde mora"
+              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 transition transform hover:scale-105" />
+          </div>
+          <div class="flex flex-col">
+            <label for="user-team-input" class="mb-1 text-gray-600">Time</label>
+            <input id="user-team-input" type="text" placeholder="Time que você torce"
+              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 transition transform hover:scale-105" />
+          </div>
+        </div>
+    
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 items-end">
+          <div class="flex flex-col">
+            <label for="user-color-input" class="mb-1 text-gray-600">Cor favorita</label>
+            <input id="user-color-input" type="color" value="#4f46e5"
+              class="w-full h-12 p-0 border border-gray-300 rounded-lg transition transform hover:scale-105" />
+          </div>
+          <div class="flex flex-col">
+            <label for="user-hobby-input" class="mb-1 text-gray-600">Hobby</label>
+            <input id="user-hobby-input" type="text" placeholder="Seu hobby preferido"
+              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 transition transform hover:scale-105" />
+          </div>
+        </div>
+    
+        <button id="start-btn" type="button"
+          class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 rounded-lg transition transform hover:scale-105 active:scale-95 animate-wiggle">
+          Vamos lá! 🚀
+        </button>
+      </form>
+    </div>
+
+    <!-- 2) Quiz Area (with Prev + Next) -->
+    <div id="quiz-area" class="hidden bg-white rounded-2xl shadow-lg p-6 sm:p-8 space-y-6">
+      <div id="progress-bar" class="text-sm text-gray-500 font-medium"></div>
+      <h2 id="question-title" class="text-xl sm:text-2xl font-bold text-indigo-700"></h2>
+      <div id="options" class="grid grid-cols-1 sm:grid-cols-2 gap-4"></div>
+      <div class="flex justify-between mt-4">
+        <button id="prev-btn" disabled
+          class="bg-gray-300 text-gray-700 px-6 py-2 rounded-lg hover:bg-gray-400 disabled:opacity-50">
+          Voltar
+        </button>
+        <button id="next-btn" disabled
+          class="bg-indigo-600 text-white px-6 py-2 rounded-lg hover:bg-indigo-700 disabled:opacity-50">
+          Próxima
+        </button>
+      </div>
+    </div>
+
+    <!-- ─── TELA DE LOADING ─────────────────────────────────── -->
+    <div id="loading-screen"
+      class="fixed inset-0 z-50 flex flex-col items-center justify-center bg-white/90 space-y-4 hidden">
+      <h2 class="text-3xl font-bold text-indigo-700">
+        🤔 Se você fosse um site, seria… 🤔
+      </h2>
+      <svg class="animate-spin h-12 w-12 text-indigo-600" viewBox="0 0 24 24">
+        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
+        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
+      </svg>
+      <p class="text-gray-700">Aguarde, estamos gerando seu site perfeito!</p>
+    </div>
+
+    <!-- 3) Result Screen -->
+    <div id="result"
+      class="hidden bg-gradient-to-r from-purple-500 to-pink-500 rounded-2xl shadow-lg p-8 text-white text-center space-y-6">
+    
+      <!-- Spinner interno -->
+      <div id="result-loading" class="absolute inset-0 flex items-center justify-center bg-white/90 z-10">
+        <svg class="animate-spin h-12 w-12 text-purple-700" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
+        </svg>
+      </div>
+    
+      <h2 id="result-title" class="text-3xl font-bold animate-bounce">🎉 Se você fosse um site… 🎉</h2>
+      <h3 id="domain-name" class="text-5xl font-mono leading-tight break-words">carregando...</h3>
+      <p id="description" class="text-lg">carregando descrição...</p>
+      <p class="text-lg">Seu site ficou incrível, <span id="user-name" class="font-bold"></span>!</p>
+    
+      <!-- MOCKUP -->
+      <div id="result-image-wrapper" class="w-full max-w-[400px] mx-auto overflow-hidden rounded-lg shadow-md relative">
+        <img id="result-image" class="w-full h-auto hidden" alt="Mockup gerado" />
+      </div>
+    
+      <!-- Botões -->
+      <div class="flex justify-center gap-4">
+        <button id="restart-btn" class="bg-white text-indigo-600 py-3 px-6 rounded-lg">Fazer novamente</button>
+        <button id="share-btn" class="bg-blue-500 text-white py-3 px-6 rounded-lg">📥 Compartilhar</button>
+      </div>
+    </div>
+    
+    <div id="toast" class="toast hidden" role="status"><span></span></div>
+    </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="js/color-list.js"></script>
+  <script src="script.js"></script>
+</body>
+
+</html>

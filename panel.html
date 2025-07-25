@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Painel de visualização dos acessos e bloqueios do sistema." />
+    <title>Admin – Painel de Acessos</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            padding: 2rem;
+            background: #f4f4f8;
+        }
+
+        h1 {
+            margin-bottom: 1rem;
+            color: #333;
+        }
+
+        #resumo {
+            margin-bottom: 1rem;
+            font-weight: bold;
+        }
+
+        .table-container {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            /* scroll suave em iOS */
+        }
+
+        .table-container table {
+            width: 100%;
+            min-width: 800px;
+            /* garante espaço para as 8 colunas */
+            border-collapse: collapse;
+            background: white;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+        }
+
+        caption {
+            caption-side: top;
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        th,
+        td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+            vertical-align: top;
+        }
+
+        th {
+            background-color: #4f46e5;
+            color: white;
+        }
+
+        td:nth-child(3),
+        td:nth-child(4),
+        td:nth-child(6),
+        td:nth-child(7) {
+            text-align: center;
+        }
+
+        td div {
+            white-space: nowrap;
+            overflow-y: auto;
+            max-height: 8em;
+        }
+
+        tr.bloqueado {
+            background-color: #fdecea;
+        }
+
+        td.timestamps {
+            max-height: 8em;
+            overflow-y: auto;
+        }
+
+        /* ─── Layout “cards” em mobile ───────────────────────────────── */
+        @media (max-width: 640px) {
+
+            table,
+            thead,
+            tbody,
+            th,
+            td,
+            tr {
+                display: block;
+            }
+
+            thead tr {
+                position: absolute;
+                top: -9999px;
+                left: -9999px;
+            }
+
+            tr {
+                border: 1px solid #ddd;
+                margin-bottom: 1rem;
+                padding: 0.5rem;
+                border-radius: 0.5rem;
+                background: white;
+            }
+
+            td {
+                position: relative;
+                padding-left: 50%;
+                white-space: normal;
+                text-align: left;
+            }
+
+            td:before {
+                position: absolute;
+                left: 1rem;
+                top: 0.5rem;
+                width: 45%;
+                padding-right: 1rem;
+                font-weight: bold;
+                white-space: nowrap;
+            }
+
+            td:nth-of-type(1):before {
+                content: "ID";
+            }
+
+            td:nth-of-type(2):before {
+                content: "Nome";
+            }
+
+            td:nth-of-type(3):before {
+                content: "IP";
+            }
+
+            td:nth-of-type(4):before {
+                content: "Acessos";
+            }
+
+            td:nth-of-type(5):before {
+                content: "Último Acesso";
+            }
+
+            td:nth-of-type(6):before {
+                content: "Acessos (30 min)";
+            }
+
+            td:nth-of-type(7):before {
+                content: "Bloqueado";
+            }
+
+            td:nth-of-type(8):before {
+                content: "Horários";
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Painel de Acessos</h1>
+    <div id="resumo">Carregando resumo...</div>
+
+    <div class="table-container">
+        <table aria-describedby="resumo">
+            <caption>Lista de acessos registrados</caption>
+            <thead>
+                <tr>
+                    <th scope="col">ID do Usuário</th>
+                    <th scope="col">Nome</th>
+                    <th scope="col">Endereço IP</th>
+                    <th scope="col">Acessos</th>
+                    <th scope="col">Último Acesso</th>
+                    <th scope="col">Acessos (30 min)</th>
+                    <th scope="col">Bloqueado</th>
+                    <th scope="col">Horários de Acesso</th>
+                </tr>
+            </thead>
+            <tbody id="tbody">
+                <!-- preenchido via JS -->
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        (async () => {
+            const resumoEl = document.getElementById('resumo');
+            const tbody = document.getElementById('tbody');
+
+            try {
+                const res = await fetch('api/panel-api.php');
+                if (!res.ok) throw new Error(`Status ${res.status}`);
+
+                const data = await res.json();
+                if (!Array.isArray(data)) {
+                    throw new Error(data.error || 'Formato inesperado');
+                }
+
+                // limpa antes de popular
+                tbody.innerHTML = '';
+
+                let totalAcessos = 0;
+                data.forEach(u => {
+                    totalAcessos += u.count;
+                    const tr = document.createElement('tr');
+                    if (u.bloqueado === 'SIM') tr.classList.add('bloqueado');
+
+                    tr.innerHTML = `
+            <td>${u.id}</td>
+            <td>${u.nome || '—'}</td>
+            <td>${u.ip}</td>
+            <td>${u.count}</td>
+            <td>${u.ultimo_acesso}</td>
+            <td>${u.quantidade_30min}</td>
+            <td aria-label="${u.bloqueado === 'SIM' ? 'Bloqueado' : 'Liberado'}">
+              ${u.bloqueado === 'SIM' ? '🔒' : '✅'}
+            </td>
+            <td class="timestamps">
+              ${u.timestamps.slice(-5).map(t => `<div>${t}</div>`).join('')}
+            </td>
+          `;
+                    tbody.appendChild(tr);
+                });
+
+                resumoEl.textContent =
+                    `Total de visitantes únicos: ${data.length} — Total de acessos: ${totalAcessos}`;
+
+            } catch (err) {
+                resumoEl.textContent = 'Erro ao carregar dados: ' + err.message;
+            }
+        })();
+    </script>
+</body>
+
+</html>

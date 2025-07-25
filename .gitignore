@@ -1,0 +1,35 @@
+# Ignorar dependências do Composer
+
+/vendor/
+/composer.lock
+
+# Arquivos de ambiente
+
+.env
+.env.local
+
+# Logs e arquivos temporários\ n/logs/
+
+\*.log
+/tmp/
+/cache/
+
+# Diretórios de build (se aplicável)
+
+/build/
+/dist/
+
+# Dependências de front-end (npm/yarn)
+
+/node\_modules/
+
+# IDEs e arquivos do sistema operacional
+
+.DS\_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# Arquivos de configuração local
+
+.env.\*.local
