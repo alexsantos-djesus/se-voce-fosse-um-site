@@ -8,10 +8,10 @@ use Dotenv\Dotenv;
 
 Dotenv::createImmutable(__DIR__ . '/../')->load();
 
-$host   = 'localhost';
-$user   = 'debugueicom_debugueicom';
-$pass   = $_ENV['DB'] ?? '';
-$dbname = 'debugueicom_debuguei_visits';
+$host   = $_ENV['DB_host'] ?? '';
+$user   = $_ENV['DB_user'] ?? '';
+$pass   = $_ENV['DB_pass'] ?? '';
+$dbname = $_ENV['DB_dbname'] ?? '';
 
 try {
   if (empty($pass)) {
