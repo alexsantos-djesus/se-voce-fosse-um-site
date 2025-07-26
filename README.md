@@ -72,11 +72,15 @@
 
   - Acesse http://localhost:8000 no navegador.
 
+---
+
 ## 📝 Uso
   1. Preencha seus dados na tela de boas-vindas.
   2. Responda às 5 perguntas do quiz.
   3. Ao final, aguarde o spinner global rodar enquanto texto e imagem são gerados.
   4. Clique em Download para salvar a tela final como PNG.
+
+---
 
 ## 📂 Estrutura do Projeto
     .
@@ -92,6 +96,8 @@
     ├── vendor/                 ← Dependências PHP (composer)
     ├── .env                    ← Variáveis de ambiente (não comitar)
     └── README.md               ← Este arquivo
+
+---
 
 ## 🔌 APIs PHP
 
@@ -131,12 +137,16 @@ gerar-imagem.php
         ]
       }
 
+---
+
 ## 💡 Personalizações Futuras
 
 - 🔄 Recarregar apenas mockup sem refazer todo o quiz.
 - 🎨 Tema escuro automático usando CSS custom properties.
 - 📱 Animações SVG no loading.
 - 🌐 Suporte a múltiplos idiomas.
+
+---
 
 ## 📝 Licença
 MIT © [ALEX SANTOS DE JESUS - DEBUGUEI]
