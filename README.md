@@ -11,7 +11,8 @@
 - [Pré-requisitos](#-pré-requisitos)  
 - [Instalação](#-instalação)  
 - [Uso](#-uso)  
-- [Estrutura do Projeto](#-estrutura-do-projeto)  
+- [Estrutura do Projeto](#-estrutura-do-projeto)
+- [APIs PHP](#-apis-php)
 - [Personalizações Futuras](#-personalizações-futuras)  
 - [Licença](#-licença)  
 
