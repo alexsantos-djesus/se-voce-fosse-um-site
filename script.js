@@ -226,7 +226,7 @@ window.addEventListener("DOMContentLoaded", () => {
   bind("next-btn", nextQuestion);
   bind("prev-btn", prevQuestion);
   bind("restart-btn", () => location.reload());
-  bind("share-btn", shareResult);
+  bind("download-btn", downloadResult);
 });
 
 async function startQuiz() {
@@ -465,16 +465,77 @@ function showToast(msg) {
   setTimeout(() => t.classList.add("hidden"), 3000);
 }
 
-function shareResult() {
-  const domain = document.getElementById("domain-name").textContent;
-  const description = document.getElementById("description").textContent;
-  const text = `Eu seria o site ${domain}!\n${description}\nDescubra o seu em ${location.href}`;
-  if (navigator.share) {
-    navigator
-      .share({ title: domain, text, url: location.href })
-      .catch(() => navigator.clipboard.writeText(text));
-  } else {
-    navigator.clipboard.writeText(text);
-    alert("Resultado copiado!");
-  }
+// 1) converte uma URL de imagem (Azure) em data-URL via seu proxy PHP
+async function toDataURL(url) {
+  const proxyUrl = `api/proxy-image.php?url=${encodeURIComponent(url)}`;
+  const res = await fetch(proxyUrl);
+  if (!res.ok) throw new Error(`Proxy falhou: ${res.status}`);
+  const blob = await res.blob();
+  return await new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.readAsDataURL(blob);
+  });
 }
+
+// 2) download bonito, sem bagunçar layout
+async function downloadResult() {
+  const resultEl = document.getElementById("result");
+
+  // Clona o conteúdo
+  const clone = resultEl.cloneNode(true);
+  Object.assign(clone.style, {
+    position: "",
+    top: "0",
+    left: "0",
+    visibility: "hidden",
+    zIndex: "9999",
+    width: `${resultEl.offsetWidth}px`,
+    height: `${resultEl.offsetHeight}px`,
+    background: "linear-gradient(to right, #8b5cf6, #ec4899)", // mesmo fundo do original
+    padding: "2rem",
+    boxSizing: "border-box",
+  });
+
+  // Remove botões e overlay
+  clone
+    .querySelectorAll("div.absolute, #restart-btn, #download-btn")
+    .forEach((el) => (el.style.display = "none"));
+
+  // Corrige a imagem
+  const img = clone.querySelector("#result-image");
+  if (img && !img.src.startsWith("data:")) {
+    img.crossOrigin = "anonymous";
+    img.src = await toDataURL(img.src);
+    await img.decode();
+    img.classList.remove("hidden");
+  }
+
+  // Adiciona à página para renderizar
+  document.body.appendChild(clone);
+  await new Promise((r) => requestAnimationFrame(r)); // aguarda layout
+
+  // Captura
+  const canvas = await html2canvas(clone, {
+    useCORS: true,
+    scale: 2,
+    backgroundColor: null,
+  });
+
+  // Remove clone
+  document.body.removeChild(clone);
+
+  // Gera download
+  canvas.toBlob((blob) => {
+    const link = document.createElement("a");
+    link.download = "meu-site-quiz.png";
+    link.href = URL.createObjectURL(blob);
+    link.click();
+    URL.revokeObjectURL(link.href);
+  });
+}
+
+// 3) vincula ao botão
+document
+  .getElementById("download-btn")
+  .addEventListener("click", downloadResult);
